@@ -1,0 +1,107 @@
+BODY
+  {
+    scrollbar-face-color: #606060;
+    scrollbar-shadow-color: #cfc8cf;
+    scrollbar-highlight-color:#cfc8cf;
+    scrollbar-3dlight-color: #000000;
+    scrollbar-darkshadow-color: #000000;
+    scrollbar-track-color: #cfc8cf;
+    scrollbar-arrow-color: cfc8cf;
+    background-color: #cfc8cf;
+  }
+
+.DRAGOBJECT
+  {
+    position: absolute;
+  }
+
+.DRAGBODY
+  {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    border: 1px #606060 solid;
+    background-color: #ffffff;
+    color: #000000;
+    font-family: Verdana, Arial;
+    font-size: 10px;
+    padding: 2px;
+    overflow: auto;
+  }
+
+.DRAGTITLE
+  {
+    position: absolute;
+    top: 0;
+    left: 0;
+    cursor: default;
+    overflow: hidden;
+  }
+
+.TBAR
+  {
+    background: url(images/titlebar.gif);
+    width: 183;
+    height: 19;
+    padding: 1px 0px 0px 18px;
+	color: #ffffff;
+    font-family: Verdana, Arial;
+    font-weight: bold;
+    font-size: 13px;
+  }
+  
+.SCALER
+  {
+    position:absolute;
+    width: 16;
+    height: 12;
+    top: 0;
+    left: 0;
+    background-image: url(images/scaler.gif);
+    overflow: hidden;
+  }
+
+.STATUSBAR
+  {
+    position: absolute;
+    width: 100%;
+    height: 14;
+    background-color: #cfc8cf;
+    border: 1px #606060 outset;
+  }
+
+.STATUSTEXT
+  {
+    position: absolute;
+	top: 0;
+	left: 0;
+	font-family: Verdana, Arial;
+	font-size: 9px;
+	color: #000000;
+	padding: 0px 0px 0px 2px;
+  }
+
+#GHOST
+  {
+    position: absolute;
+    width: 10;
+    height: 10;
+    left: 0;
+    top: 0;
+    border: 1px #606060 dashed;
+    visibility: hidden;
+    z-index: 100001;
+  }
+
+#DRAGSCREEN
+  {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    visibility: hidden;
+    z-index:500;
+  }

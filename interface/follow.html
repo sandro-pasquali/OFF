@@ -1,0 +1,284 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+
+<html>
+<head>
+	<title>Untitled</title>
+<script language="Javascript" src="FX.js"></script>
+<script language="Javascript">
+
+var $TRACKERS = new Array();
+function Tracker(speed,xOff,yOff)
+  {
+    this.id = $TRACKERS.length;
+	this.speed = speed;
+	this.xOff = xOff;
+	this.yOff = yOff;
+	this.curX = 0;
+	this.curY = 0;
+	this.set = 1;
+	
+	L = document.createElement('DIV');
+	document.body.appendChild(L);
+	L.setAttribute('id','TRACKER'+this.id);
+	L.style.position = 'absolute';
+	L.style.top = screen.width + 200;
+	L.style.left = screen.height + 200;
+	L.style.width = 32;
+	L.style.height = 32;
+	L.style.border = '1px black solid';
+    L.style.filter = 'progid:DXImageTransform.Microsoft.Alpha(opacity=30)';
+	this.color = L.style.backgroundColor = this.setColor();
+	document.all['L'+this.id].style.backgroundColor = this.color;
+	L.style.zIndex = 0;
+	
+	this.tarX = 0;
+	this.tarY = 0;
+	this.ref = L;
+	this.opRef = this.ref.filters.item("DXImageTransform.Microsoft.Alpha");
+	this.timer = setInterval('$TRACKERS['+this.id+'].update()',this.speed);
+	
+	this.targetX = function()
+	  {
+	    if(this.set==0)
+		  {
+		    return(this.tarX);
+		  }
+	    else
+		  {
+		    return($EI.x + this.xOff);
+		  }
+	  }
+	  
+	this.targetY = function()
+	  {
+	    if(this.set==0)
+		  {
+		    return(this.tarY);
+		  }
+	    else
+		  {
+		    return($EI.y + this.yOff);
+		  }
+	  }
+	
+	this.update = function()
+	  {
+		var r = this.ref.style;
+		var tX = this.targetX();
+		var tY = this.targetY();
+		var dX = (tX-r.pixelLeft)*.2;
+		var dY = (tY-r.pixelTop)*.2;
+		var finX = (Math.abs(dX)<1);
+		var finY = (Math.abs(dY)<1);
+		r.pixelLeft = r.pixelLeft + dX;
+		r.pixelTop = r.pixelTop + dY;
+		
+		var xF = 0;
+		var yF = 0;
+		if(finX)
+		  {
+		    r.pixelLeft = tX;
+			xF = 1;
+		  }
+		if(finY)
+		  {
+		    r.pixelTop = tY;
+			yF = 1;
+		  }
+			
+		document.all['L'+this.id].innerHTML = '<SPAN CLASS="'+((this.set)?'send':'return')+'ARROW">'+((this.set)?'<':'>')+' </SPAN>'+r.pixelLeft + ' :: ' + r.pixelTop;
+		
+		if(xF&&yF)
+		  {
+		    if(this.set==0)
+			  {
+		        this.makeImage(tX,tY,this.color);
+				this.set = 1;
+			  }
+		  }
+		
+		return;
+	  }
+  }
+  
+Tracker.prototype.imCount = 0;
+Tracker.prototype.colorList = new Array();
+Tracker.prototype.setColor = function()
+  {
+    var c = this.colorList[this.colorList.length] = 'rgb('+Math.random()*255+','+Math.random()*255+','+Math.random()*255+')';
+    return(c);
+  }
+
+Tracker.prototype.makeImage = function(l,t,c)
+  {
+    ++Tracker.prototype.imCount;
+	if(Tracker.prototype.imCount>80)
+	  {
+	    var DI = document.images;
+	    for(y=0;y<20;y++)
+		  {
+		    
+			//OPACITY.addFX(document.images[y].id,'fadeOut',0,30,'kill(\''+document.images[y].id+'\')');
+			kill(document.images[y].id);
+		  }
+		Tracker.prototype.imCount -= 20;
+	  }
+    var im = Math.floor(Math.random()*12);
+	L = document.createElement('IMG');
+	document.body.appendChild(L);
+	L.id = 'IM'+parseInt(Math.random()*999999999);
+	L.src = 'images/'+im+'.jpg';
+	L.style.position = 'absolute';
+	L.style.top = t;
+	L.style.left = l;
+	L.style.width = 32;
+	L.style.border = '1px black solid';
+	L.style.backgroundColor = c;
+	L.TIM = null;
+	L.onmouseover = function()
+	  {
+	    this.style.width = 200;
+		destX = this.style.pixelLeft-280;
+		destY = this.style.pixelTop-100;
+		document.all[this.id].filters.item("DXImageTransform.Microsoft.Alpha").opacity = 60;
+	  }
+	L.onmouseout = function()
+	  {
+	    with(document.all[this.id])
+		  {
+	        style.width = 32 + Math.random() * 64;
+		    filters.item("DXImageTransform.Microsoft.Alpha").opacity = 10+Math.random()*60;
+		  }
+	  }
+    L.style.filter = 'progid:DXImageTransform.Microsoft.Alpha(opacity=0)';
+	OPACITY.addFX(L.id,'fadeIn',60,20);
+	return;
+  }  
+  
+$EI = new Object();
+$EI.x = 0;
+$EI.y = 0;
+$EI.RIMORSO = $EI.AMORE = $EI.SOTTOMISSIONE = 0;
+function mMove()
+  {
+    var e = window.event;
+    $EI.x = e.x + document.body.scrollLeft;
+	$EI.y = e.y + document.body.scrollTop;
+	return;
+  }
+  
+function mDown()
+  {
+    var e = window.event;
+	var s = e.srcElement;
+	for(x=0; x<$TRACKERS.length; x++)
+	  {
+	    $TRACKERS[x].set = 0;
+	  }
+	var ep = document.elementFromPoint(e.x,e.y);
+	if(ep.id.indexOf('IM')!=-1) 
+	  {
+	    spawn(960,700);
+	  }
+	else
+	  {
+	    spawn();
+	  }
+	return;
+  }
+
+function spawn(mx,my)
+  {
+    var t = $TRACKERS.length;
+	for(x=0; x<t; x++)
+	  {
+	    $TRACKERS[x].tarX = (document.body.scrollLeft-200)+Math.random()*(mx||1400); //: Math.random()*1400;
+		$TRACKERS[x].tarY = (document.body.scrollTop-200)+Math.random()*(my||1000); //: Math.random()*1000;
+	  }
+	return;
+  }
+ 
+function kill(id)
+  {
+    document.all[id].outerHTML = '';
+  } 
+ 
+var OPACITY = null;
+function init()
+  {
+    document.onmousemove = mMove;
+	document.onmousedown = mDown;
+	
+	$TRACKERS[0] = new Tracker(15,7,-38);
+	$TRACKERS[1] = new Tracker(45,-38,-38);
+	$TRACKERS[2] = new Tracker(20,-38,7);
+	$TRACKERS[3] = new Tracker(35,7,7);
+	$TRACKERS[4] = new Tracker(30,22,-53);
+	$TRACKERS[5] = new Tracker(25,-53,-53);
+	$TRACKERS[6] = new Tracker(40,-53,22);
+	$TRACKERS[7] = new Tracker(50,22,22);
+	
+	scrollTimer = setInterval('scroller()',25);
+	
+    OPACITY = new $Opacity();
+	
+	return;
+  }
+ 
+var destX = destY = 0;
+var currX = currY = 0;
+var scrollTimer = null;
+
+function scroller()
+  {  
+	currX = currX + (destX-currX)*.5;
+	currY = currY + (destY-currY)*.5;
+	window.scrollTo(Math.ceil(currX),Math.ceil(currY));
+	document.all['COORDS'].style.top = document.body.scrollTop+660;
+	document.all['COORDS'].style.left = document.body.scrollLeft+920;
+    return;
+  }
+</script>
+
+<style>
+
+BODY
+  {
+    background-color: #a0a0a0;
+	cursor: crosshair;
+	margin: 0px;
+  }
+
+.sendARROW
+  {
+    color:#ffffff;
+	font-family:Arial;
+    font-size:10px;
+  }
+  
+.returnARROW
+  {
+    color:#ff0000;
+	font-family:Arial;
+    font-size:10px;
+  }
+  
+</style>
+</head>
+
+<body onload = "init()" scroll=no topmargin=0 leftmargin=0 oncontextmenu="return false">
+<table cellpadding=0 cellspacing=0 border=0 width=10240 height=7680><tr><td></td></tr></table>
+
+<DIV ID="COORDS" STYLE="position:absolute;width:300;">
+<DIV ID="L0" STYLE="position:absolute;top:0;left:2;color:#ffffff;font-family:Arial;font-size:10px;width:70;height:11;filter:progid:DXImageTransform.Microsoft.Alpha(opacity=60);"></DIV>
+<DIV ID="L1" STYLE="position:absolute;top:11;left:2;color:#ffffff;font-family:Arial;font-size:10px;filter:progid:DXImageTransform.Microsoft.Alpha(opacity=60);"></DIV>
+<DIV ID="L2" STYLE="position:absolute;top:22;left:2;color:#ffffff;font-family:Arial;font-size:10px;filter:progid:DXImageTransform.Microsoft.Alpha(opacity=60);"></DIV>
+<DIV ID="L3" STYLE="position:absolute;top:33;left:2;color:#ffffff;font-family:Arial;font-size:10px;filter:progid:DXImageTransform.Microsoft.Alpha(opacity=60);"></DIV>
+<DIV ID="L4" STYLE="position:absolute;top:44;left:2;color:#ffffff;font-family:Arial;font-size:10px;filter:progid:DXImageTransform.Microsoft.Alpha(opacity=60);"></DIV>
+<DIV ID="L5" STYLE="position:absolute;top:55;left:2;color:#ffffff;font-family:Arial;font-size:10px;filter:progid:DXImageTransform.Microsoft.Alpha(opacity=60);"></DIV>
+<DIV ID="L6" STYLE="position:absolute;top:66;left:2;color:#ffffff;font-family:Arial;font-size:10px;filter:progid:DXImageTransform.Microsoft.Alpha(opacity=60);"></DIV>
+<DIV ID="L7" STYLE="position:absolute;top:77;left:2;color:#ffffff;font-family:Arial;font-size:10px;filter:progid:DXImageTransform.Microsoft.Alpha(opacity=60);"></DIV>
+</DIV>
+
+</body>
+</html>
